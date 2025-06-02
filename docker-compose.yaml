@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  telegram_bot:
+    build: .
+    container_name: telegram_bot_Avto
+    env_file: .env
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    command: python3 main/bot.py
+    depends_on:
+      train_intent_model:
+        condition: service_completed_successfully
+      train_dialogues_model:
+        condition: service_completed_successfully
+
+  train_intent_model:
+    build: .
+    container_name: train_intent_model_bot_Avto
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    command: python3 main/train_intent_model.py
+
+  train_dialogues_model:
+    build: .
+    container_name: train_dialogues_model_bot_Avto
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    command: python3 main/train_dialogues_model.py
+
+volumes:
+  models:
